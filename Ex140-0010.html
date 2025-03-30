@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Example 140-0010</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<style>
+  .error { color: red; }
+  input.error-border { border: 1px solid red; }
+</style>
+</head>
+<body>
+<div id="problem">A <input type="number" min="1" max="100000" class="form-control" id="plant-capacity" placeholder="35000" />-kW plant has a utilization factor of <input type="number" min="1" max="100" class="form-control" id="util-factor" placeholder="71" />% and a load factor of <input type="number" min="1" max="100" class="form-control" id="load-factor" placeholder="39.6" />%. What is the average load in the plant?</div>
+<div id="error-message" class="error"></div>
+<br>
+<div id="given">Given: $$\begin{aligned}
+Plant Capacity &= 35,000 kW  \hspace{100cm} \\
+Util factor &= 71\%  \\
+Load factor &=39.6\%  \\
+\end{aligned} $$
+</div>
+<div id="reqd">Required: \(AveLoad=?\) </div><br><br> 
+<div id="solution">Solution:
+$$\begin{aligned}
+(Ave load) &= (Plant Capacity)(Util factor)(Load factor) \hspace{100cm} \\
+&= (35,000-kW)(71\%)(39.6\%) \\
+&= 9,840.6 kW \text{(Answer)}
+\end{aligned}$$
+</div> <br>
+<div>
+  <button type="button" class="btn btn-default" id="recalculate">Re-calculate</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script>
+    function htmlEncode(value) {
+      return $('<div/>').text(value).html();
+    }
+ 
+    $(function () {
+      $('#recalculate').click(function () {
+        // Reset error states
+        $('.form-control').removeClass('error-border');
+        $('#error-message').text('');
+        
+        // Get input values
+        const plantCapacity = $('#plant-capacity').val();
+        const utilFactor = $('#util-factor').val();
+        const loadFactor = $('#load-factor').val();
+        
+        // Validate inputs
+        let isValid = true;
+        if (!plantCapacity) {
+          $('#plant-capacity').addClass('error-border');
+          isValid = false;
+        }
+        if (!utilFactor) {
+          $('#util-factor').addClass('error-border');
+          isValid = false;
+        }
+        if (!loadFactor) {
+          $('#load-factor').addClass('error-border');
+          isValid = false;
+        }
+        
+        if (!isValid) {
+          $('#error-message').text('Please fill in all fields before calculating.');
+          return;
+        }
+        
+        // Check if values are within allowed ranges
+        if (plantCapacity < 1 || plantCapacity > 100000) {
+          $('#plant-capacity').addClass('error-border');
+          $('#error-message').text('Plant capacity must be between 1 and 100,000 kW.');
+          return;
+        }
+        
+        if (utilFactor < 1 || utilFactor > 100) {
+          $('#util-factor').addClass('error-border');
+          $('#error-message').text('Utilization factor must be between 1% and 100%.');
+          return;
+        }
+        
+        if (loadFactor < 1 || loadFactor > 100) {
+          $('#load-factor').addClass('error-border');
+          $('#error-message').text('Load factor must be between 1% and 100%.');
+          return;
+        }
+        
+        // If all validations pass, proceed with calculation
+        let new_given = 'Given: $$\\begin{aligned} Plant\\ Capacity &= '+ htmlEncode(plantCapacity) + 
+                        '\\ kW \\hspace{100cm} \\\\ Util\\ factor &= ' + htmlEncode(utilFactor) + 
+                        '\\% \\\\ Load\\ factor &= '+ htmlEncode(loadFactor) + '\\% \\end{aligned} $$';
+        
+        // Calculate the answer and round to 2 decimal places
+        let ans = plantCapacity * (utilFactor)/100 * (loadFactor)/100;
+        let roundedAns = Math.round((ans + Number.EPSILON) * 100) / 100;
+        
+        // Format the number with commas and 2 decimal places
+        let formattedAns = roundedAns.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        
+        let new_solution = 'Solution: $$\\begin{aligned} (Ave\\ load) &= (Plant\\ Capacity)(Util\\ factor)(Load\\ factor) \\hspace{100cm} \\\\ &= ('+ 
+                           htmlEncode(plantCapacity) + '\\ kW)(' + htmlEncode(utilFactor) + '\\%)('+ 
+                           htmlEncode(loadFactor) + '\\%) \\\\ &= ' + formattedAns + 
+                           '\\ kW\\ \\text{(Answer)} \\end{aligned}$$';
+ 
+        document.getElementById("given").innerHTML = new_given; 
+        document.getElementById("solution").innerHTML = new_solution; 
+
+        MathJax.typeset();
+      });
+    });
+</script>
+</body>
+</html>
